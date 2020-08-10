@@ -1,6 +1,6 @@
 ----------------------------------------------------------------
-Mon Aug 10 08:25:05 EDT 2020:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-0173-d854-d5de-00000af2c658 
+Mon Aug 10 12:48:15 EDT 2020:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-0173-d945-c507-00000bb77928 
 on database directory memory:/root/Dissertationgitfiles/Dissertation/databaseName=metastore_db with class loader sun.misc.Launcher$AppClassLoader@355da254 
 Loaded from file:/root/spark/spark-2.4.0-bin-hadoop2.7/jars/derby-10.12.1.1.jar
 java.vendor=Oracle Corporation

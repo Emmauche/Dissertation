@@ -4,8 +4,9 @@
 # httpuv
 #sparklyr
 install.packages("httpuv")
+
 library(sparklyr)
-spark_install(version = "2.1.0")
+spark_install(version = "2.4.0")
 # now install devtools and include its library
 install.packages("devtools")
 library(devtools)
