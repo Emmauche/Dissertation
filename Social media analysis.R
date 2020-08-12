@@ -13,6 +13,9 @@ library(httpuv)
 # and maximun of 18,000 tweets returned per request for e.g
 library(rtweet)
 tweets_covid <-search_tweets("#COVID-19", n=1000, include_rts = TRUE, lang = "en")
-
-
-
+# now we shall examine the data extracted We use the head() function
+head(tweets_covid)
+# To return tweets by specific user, you can use get_timeline() function. for e.x
+#extracting tweets from trump we execute
+get_trump <- get_timeline("@Trump", n =3200)
+head(get_trump)
