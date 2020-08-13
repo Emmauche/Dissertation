@@ -12,7 +12,7 @@ library(httpuv)
 # the function search_tweets() is a querry to connect with twitter returning the twitter data matching a search query for tweets from the past 7 days only
 # and maximun of 18,000 tweets returned per request for e.g
 library(rtweet)
-tweets_covid <-search_tweets("#COVID-19", n=1000, include_rts = TRUE, lang = "en")
+tweets_covid <-search_tweets("#COVID-19", n= 2000, include_rts = TRUE, lang = "en")
 # now we shall examine the data extracted We use the head() function
 head(tweets_covid)
 # To return tweets by specific user, you can use get_timeline() function. for e.x
