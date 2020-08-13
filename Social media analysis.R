@@ -47,3 +47,40 @@ sc_name_sort <- sort(sc_name, decreasing = TRUE)
 head(sc_name_sort)
 # Follower count can help to measure popularity of a user as it measures influence on social media
 # You can compare followers count of shows or events or persons by using the lookup_users() function
+# Exploring components
+# screen_name is to understand user interest
+# followers_count is to compare social media influence
+# retweet_count and text is to identify popular tweets
+# We can compare followers count. example
+
+tw_follower <- lookup_users(c("trump","Christiano","adele"))
+tw_trends <- lookup_users(c("COVID","COVID-19","corona virus"))
+trend_df <- tw_trends[,c("screen_name","followers_count")]
+trend_df
+#next we create a dataframe for the screen name and followers count
+user_df <- tw_follower[,c("screen_name", "followers_count")]
+#to view the dataframe
+# retweet is a tweet re-shared by another user
+# We use retweet_count to store number of retweets
+# it helps to identify trends and popularity of a topic
+# We will create
+
+user_df
+# creating dataframe of tweet text and retweet counts
+rtwt <- tw_follower[,c("text","retweet_count")]
+rtwt
+# Sorting data frame based on descending order
+library(dplyr)
+rtwt_sort <- arrange(rtwt, desc(retweet_count))
+rtwt_sort
+# dealing with duplicate tweets
+# We use unique functions to tackle duplication of tweets. example
+rtwt_unique <- unique(rtwt_sort, by ="text")
+rtwt_unique
+head(rtwt_unique)
+# In summary the tweet count is to derive insights, identify twitter users who are interested in atopic
+# And look at users who tweet often about a topic and can be used for target advertising of actions
+# to create the table of users and tweet count for a topic. we can have the  code
+tweets_co <- search_tweets("#COVID")
+User_name_table <- table(tweets_co$screen_name)
+head(User_name_table)
