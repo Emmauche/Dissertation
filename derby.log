@@ -1,11 +1,11 @@
 ----------------------------------------------------------------
-Mon Aug 10 12:48:15 EDT 2020:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-0173-d945-c507-00000bb77928 
-on database directory memory:/root/Dissertationgitfiles/Dissertation/databaseName=metastore_db with class loader sun.misc.Launcher$AppClassLoader@355da254 
-Loaded from file:/root/spark/spark-2.4.0-bin-hadoop2.7/jars/derby-10.12.1.1.jar
+Fri Aug 14 14:51:59 EDT 2020:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-0173-ee50-7e3e-000007ace038 
+on database directory memory:/home/emmanuel/R/Dissertation/databaseName=metastore_db with class loader org.apache.spark.sql.hive.client.IsolatedClientLoader$$anon$1@59e7a2af 
+Loaded from file:/home/emmanuel/spark/spark-3.0.0-bin-hadoop2.7/jars/derby-10.12.1.1.jar
 java.vendor=Oracle Corporation
 java.runtime.version=1.8.0_201-b09
-user.dir=/root/Dissertationgitfiles/Dissertation
+user.dir=/home/emmanuel/R/Dissertation
 os.name=Linux
 os.arch=amd64
 os.version=4.15.0-112-generic
