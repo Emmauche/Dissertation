@@ -22,7 +22,6 @@ spark_uninstall(version = "2.4.0", hadoop = "2.7")
 # now install devtools and include its library
 install.packages("devtools")
 library(devtools)
-devtools::install_github("rstudio/sparklyr")
 # now restart R, through the session bar
 # now include the sparklyr library
 library(sparklyr)
