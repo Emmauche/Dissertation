@@ -41,3 +41,9 @@ library(sparklyr)
 library(ggplot2)
 library(dbplot)
 library(dplyr)
+# now we start our spark connection
+sc <- spark_connect(master = "local")
+# next we will read the okcupid file into spark
+okc <- spark_read_csv(sc, "okcupidData/profiles.csv", escape = "\" " , memory = FALSE, options = list(multiline = TRUE)) %>% mutate(height = as.numeric(height), income = ifelse(income == "-1", NA, as.numeric(income))) %>% mutate(sex = ifelse(is.na(sex),"missing", sex)) %>% mutate(drinks = ifelse(is.na(drinks),"missing", drinks)) %>% mutate(drugs = ifelse(is.na(drugs),"missing", drugs)) %>% mutate(job = ifelse(is.na(job),"missing", job)) 
+glimpse()
+  
