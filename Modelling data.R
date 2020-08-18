@@ -11,3 +11,33 @@ spark_write_csv(car, "car.csv")
 # In practice we would read an existing dataset from a distributed storage system like HDFS, but we can also read back from the local file system
 # like
 car <- spark_read_csv(Sc, "car.csv")
+####################################################################################################
+# Usinf a sample document for modelling as example. her we are using files from "okcupid" dating site the data is zipped
+download.file("https://github.com/r-spark/okcupid/raw/master/profiles.csv.zip", "okcupid.zip")
+# Now we will unzip it
+unzip("okcupid.zip", exdir = "okcupidData")
+# deleting the zip file we run the unlink function
+unlink("okcupid.zip")
+head("okcupidData")
+str("okcupidData")
+# working on the profiles
+profiles <- read.csv("okcupidData/profiles.csv")
+profiles
+write.csv(dplyr:: sample_n(profiles, 10^3),"okcupidData/profiles.csv", row.names = FALSE)
+# to follow along we need to install the following packages
+install.packages("ggmosaic")
+install.packages("forcats")
+install.packages("FactoMineR")
+######################################################################################################################
+# EXPLORATORY DATA ANALYSIS
+# Exploratory data analysis (EDA), in the context of predictive modeling, is the exercise of looking at excerpts and summaries of the data. 
+# The specific goals of the EDA stage are informed by the business problem, but here are some common objectives:
+
+# 1) Check for data quality; confirm meaning and prevalence of missing values and reconcile statistics against existing controls.
+# 2) Understand univariate relationships between variables.
+# 3) Perform an initial assessment on what variables to include and what transformations need to be done on them.
+# To begin, we connect to Spark, load libraries, and read in the data:
+library(sparklyr)
+library(ggplot2)
+library(dbplot)
+library(dplyr)
