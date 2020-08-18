@@ -44,6 +44,29 @@ library(dplyr)
 # now we start our spark connection
 sc <- spark_connect(master = "local")
 # next we will read the okcupid file into spark
-okc <- spark_read_csv(sc, "okcupidData/profiles.csv", escape = "\" " , memory = FALSE, options = list(multiline = TRUE)) %>% mutate(height = as.numeric(height), income = ifelse(income == "-1", NA, as.numeric(income))) %>% mutate(sex = ifelse(is.na(sex),"missing", sex)) %>% mutate(drinks = ifelse(is.na(drinks),"missing", drinks)) %>% mutate(drugs = ifelse(is.na(drugs),"missing", drugs)) %>% mutate(job = ifelse(is.na(job),"missing", job)) 
-glimpse()
-  
+okc <- spark_read_csv(
+  sc, 
+  "okcupidData/profiles.csv", 
+  escape = "\"", 
+  memory = FALSE,
+  options = list(multiline = TRUE)
+) %>%
+  mutate(
+    height = as.numeric(height),
+    income = ifelse(income == "-1", NA, as.numeric(income))
+  ) %>%
+  mutate(sex = ifelse(is.na(sex), "missing", sex)) %>%
+  mutate(drinks = ifelse(is.na(drinks), "missing", drinks)) %>%
+  mutate(drugs = ifelse(is.na(drugs), "missing", drugs)) %>%
+  mutate(job = ifelse(is.na(job), "missing", job))
+# to view the data we use the glimpse function
+glimpse(okc)
+# Now we add our respnse variable as a column in the dataset and look at it's distribution
+okc <- okc %>%
+  mutate(
+    not_working = ifelse(job %in% c("student","unemployed","retired"), 1,0)
+  ) okc %>% group_by(not_working) %>% tally()
+# the code just above isn't working
+rlang::last_error()
+# We could split the data by using the sdf_random_split() function
+data_splits <- sdf_random_split(okc, training = 0.8, testing = 0.2, seed = 42)
