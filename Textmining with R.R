@@ -72,4 +72,11 @@ rlang::last_trace()
 #Quantifying how similar and different sets of word frequencies are using a correlation test
 cor.test(data = frequency[frequency_word$author == "H.G Wells",],
          ~proportion + 'Jane Austen')
+cor.test(data = frequency[frequency_word$author == "Brontë Sisters",],
+         ~ proportion + `Jane Austen`)
 
+library(tidytext)
+install.packages()
+sentiments
+get_sentiments("afinn")
+get_sentiments("bing")
