@@ -116,8 +116,9 @@ head(rtwt_unique)
 # to create the table of users and tweet count for a topic. we can have the  code
 tweets_co <- search_tweets("#COVID")
 User_name_table <- table(tweets_co$screen_name)
+#
 head(User_name_table)
-
+#
 # •	Reading and writing data into spark: This to save the twitter data into a data-frame
 # after creating the dataframes, We can then create a directory to save then into
 # then create a directory called data.csv
