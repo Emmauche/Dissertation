@@ -10,15 +10,23 @@ library(httpuv)
 # and maximun of 18,000 tweets returned per request for e.g
 library(rtweet)
 tweets_covid <-search_tweets("#COVID-19", n= 2000, include_rts = TRUE, lang = "en")
+tweets_corona <-search_tweets("#CORONA", n= 2000, include_rts = TRUE, lang = "en")
+tweets_cov <-search_tweets("#COVID", n= 2000, include_rts = TRUE, lang = "en")
+tweets_2020 <-search_tweets("#2020", n= 2000, include_rts = TRUE, lang = "en")
 # now we shall examine the data extracted We use the head() function
 head(tweets_covid)
 names(tweets_covid)
+head(tweets_cov)
+head(tweets_corona)
+head(tweets_2020)
 
-get_trump <- get_timeline("@Trump", n =3200)
-head(get_trump)
-# working on some further examples
-# To view output of 5 columns and 10 rows, we can type
-head(get_trump[,1:5], 10)
+
+#############################################################################
+get_trump <- get_timeline("@Trump", n =3200) ############
+head(get_trump)   #######################################
+# working on some further examples#######################
+# To view output of 5 columns and 10 rows, we can type###
+head(get_trump[,1:5], 10) ###############################
 
 # Components of twitter data.
 # This deals with working with Twitter JSON. These JSON components helps in deriving insights
@@ -26,9 +34,10 @@ head(get_trump[,1:5], 10)
 #JSON has attributes and Values
 #The rtweet() function converts it into column names and values
 # Now We will view components of tweets by extracting tweets on #COVID-19 using search-tweets()
-tweets_co <- search_tweets("#COVID")
+tweets_cov19 <- search_tweets("#COVID")
+head(tweets_cov19)
 #To view the column, type
-names(tweets_co)
+names(tweets_cov19)
 
 
 # next we aim at exploring components
@@ -36,8 +45,9 @@ names(tweets_co)
 # followers_count is to compare social media influence
 # retweet_count and text is to identify popular tweets
 # Now we will create table of users and tweet counts for the topic
-sc_name <- table(tweets_co$screen_name)
-head(sc_name)
+screen_name <- table(tweets_cov19$screen_name)
+name_cov19 <- table(tweets_cov19$text, tweets_cov$text,tweets_2020$text,tweets_corona$text)
+head(screen_name)
 sc_covid <- table(tweets_covid$created_at)
 head(sc_covid)
 
@@ -79,12 +89,26 @@ head(rtwt_unique)
 # In summary the tweet count is to derive insights, identify twitter users who are interested in atopic
 # And look at users who tweet often about a topic and can be used for target advertising of actions
 # to create the table of users and tweet count for a topic. we can have the  code
-tweets_co <- search_tweets("#COVID")
+tweets_co <- search_tweets("#COVID","#covid-19", "#coronavirus", "#corona")
 User_name_table <- table(tweets_co$screen_name)
 head(User_name_table)
 
 # •	Reading and writing data into spark: This to save the twitter data into a data-frame
+
 # •	Streaming R: To create a continuous flow of data
+# Then We define a strean that processes incoming data from the input folder, performs a custom transformation in R and pushes the output into an output folder
+# first we created a directory for the input we will get, then create a csv file
+# then create a stream with the attributes we need
+names(tweets_co)
+stream <- stream_read_csv(Sc, "dissertationcsv/")%>% select(, ,) %>% stream_write_csv("output/")
+dir("output", pattern = ".csv")
+# We can keep adding files to the input location, and the spark will parallelize and process data automatically. Let's add one more file and validate that its automatically processed
+write.csv(mtcars, "input/cars_2.csv", row.names = F)
+# now check and validate that the data is processed by the spark stream
+dir("output", pattern = ".csv")
+# to stop the stream use the streamstop() function
+stream_stop(stream)
+
 # •	Basic text mining
 # •	Text mining with R
 # •	Tidying text

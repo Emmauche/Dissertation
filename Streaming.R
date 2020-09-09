@@ -10,3 +10,5 @@ write.csv(mtcars, "input/cars_2.csv", row.names = F)
 dir("output", pattern = ".csv")
 # to stop the stream use the streamstop() function
 stream_stop(stream)
+head(mtcars$mpg)
+names(mtcars)
