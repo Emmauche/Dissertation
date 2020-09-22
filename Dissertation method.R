@@ -137,10 +137,11 @@ sc <- spark_connect(master = "local")
 spark_read_csv(sc, "tweetcsv/")
 
 # •	Streaming R: To create a continuous flow of data
-# Then We define a strean that processes incoming data from the input folder, performs a custom transformation in R and pushes the output into an output folder
+# Then We define a stream that processes incoming data from the input folder, performs a custom transformation in R and pushes the output into an output folder
 # first we created a directory for the input we will get, then create a csv file
 # then create a stream with the attributes we need
 names(tweets_co)
+??stream
 stream <- stream_read_csv(Sc, "dissertationcsv/")%>% select(, ,) %>% stream_write_csv("output/")
 dir("output", pattern = ".csv")
 # We can keep adding files to the input location, and the spark will parallelize and process data automatically. Let's add one more file and validate that its automatically processed
@@ -153,7 +154,10 @@ stream_stop(stream)
 # Unreliable, COnspiracy Clickbait, political/biased
 #some keywords
 #covid19, covid-19, coronavirus, corona virus, 2019nCov, CoronavirusOutbreak, coronapocalyse
-
+??textmining
+??broom
+??pipeline
+??analyze
 
 # •	Basic text mining
 # •	Text mining with R
