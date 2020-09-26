@@ -157,7 +157,7 @@ spark_read_csv(sc, "tweetcsv/")
 # then create a stream with the attributes we need
 names(tweets_co)
 ??stream
-stream <- stream_read_csv(Sc, "dissertationcsv/")%>% select(, ,) %>% stream_write_csv("output/")
+# stream <- stream_read_csv(Sc, "dissertationcsv/")%>% select(, ,) %>% stream_write_csv("output/")
 dir("output", pattern = ".csv")
 # We can keep adding files to the input location, and the spark will parallelize and process data automatically. Let's add one more file and validate that its automatically processed
 write.csv(mtcars, "input/cars_2.csv", row.names = F)
@@ -173,9 +173,36 @@ stream_stop(stream)
 ??broom
 ??pipeline
 ??analyze
-# 'dplyr', 'ggplot2
-browseVignettes(package = "tidytext")
+??ggplot
+citation()
+citation("broom")
+# spark streaming
+# A good way of looking at the way how Spark streams update is as a three stage operation:
+# Input - Spark reads the data inside a given folder. The folder is expected to contain multiple data files, with new files being created containing the most current stream data.
+# Processing - Spark applies the desired operations on top of the data. These operations could be data manipulations (dplyr, SQL), data transformations (sdf operations, PipelineModel predictions), or native R manipulations (spark_apply()).
+# Output - The results of processing the input files are saved in a different folder.
+install.packages("future")
+install.packages("shiny")
+library(dplyr)
+library(future)
 
+??future
+install.packages("sparklyr")
+library(sparklyr)
+sc <- spark_connect(master = "local")
+
+if(file.exists("source")) unlink("source", TRUE)
+if(file.exists("source-out")) unlink("source-out", TRUE)
+stream_generate_test(iterations = 1)
+read_folder <- stream_read_csv(sc, "source") 
+write_output <- stream_write_csv(read_folder, "source-out")
+invisible(future(stream_generate_test(interval = 0.5)))
+
+stream_stop(write_output)
+
+??shiny
+stream_view(write_output)
+stream_stop(write_output)
 # •	Basic text mining
 # •	Text mining with R
 # •	Tidying text
