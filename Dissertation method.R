@@ -174,7 +174,19 @@ stream_stop(stream)
 ??pipeline
 ??analyze
 ??ggplot
-
+citation()
+citation("broom")
+# spark streaming
+# A good way of looking at the way how Spark streams update is as a three stage operation:
+# Input - Spark reads the data inside a given folder. The folder is expected to contain multiple data files, with new files being created containing the most current stream data.
+# Processing - Spark applies the desired operations on top of the data. These operations could be data manipulations (dplyr, SQL), data transformations (sdf operations, PipelineModel predictions), or native R manipulations (spark_apply()).
+# Output - The results of processing the input files are saved in a different folder.
+install.packages("future")
+library(future)
+??future
+install.packages("sparklyr")
+library(sparklyr)
+sc <- spark_connect(master = "local")
 # •	Basic text mining
 # •	Text mining with R
 # •	Tidying text
