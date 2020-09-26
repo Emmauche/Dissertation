@@ -60,6 +60,20 @@ head(sc_covid)
 # followers_count is to compare social media influence
 # retweet_count and text is to identify popular tweets
 # We can compare followers count. example
+<<<<<<< HEAD
+covid_trend<- lookup_statuses(c("COVID","COVID-19","corona virus"))
+covid_trend
+covid1_trend <- lookup_tweets("covid")
+covid1_trend
+covid_df <- covid1_trend[c("followers_count","text")]
+tw_follower <- lookup_users(c("trump","Christiano","adele"))
+tw_trends <- lookup_users(c("COVID","COVID-19","corona virus"))
+trend_df <- tw_trends[,c("screen_name","followers_count")]
+trend_df
+#next we create a dataframe for the screen name and followers count
+user_df <- tw_follower[,c("screen_name", "followers_count")]
+#to view the dataframe
+=======
 
 ## To find trend we can use the below as guide
 #######################################################################
@@ -80,6 +94,7 @@ us_cov2_df
 us_cov3_df
 us_cov4_df
 
+>>>>>>> c4b78943a9077d8f2337ed1e243e62003c063c99
 # retweet is a tweet re-shared by another user
 # We use retweet_count to store number of retweets
 # it helps to identify trends and popularity of a topic
