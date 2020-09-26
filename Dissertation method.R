@@ -158,6 +158,7 @@ stream_stop(stream)
 ??broom
 ??pipeline
 ??analyze
+??ggplot
 
 # •	Basic text mining
 # •	Text mining with R
