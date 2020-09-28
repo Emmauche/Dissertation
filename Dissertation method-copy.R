@@ -20,27 +20,16 @@ names(tweets_covid)
 head(tweets_cov)
 head(tweets_corona)
 head(tweets_2020)
-
-
 #############################################################################
-get_trump <- get_timeline("@Trump", n =3200) ############
-head(get_trump)   #######################################
-# working on some further examples#######################
-# To view output of 5 columns and 10 rows, we can type###
-head(get_trump[,1:5], 10) ###############################
-
 # Components of twitter data.
 # This deals with working with Twitter JSON. These JSON components helps in deriving insights
 # A tweet may have over 150 metadata component
 #JSON has attributes and Values
 #The rtweet() function converts it into column names and values
 # Now We will view components of tweets by extracting tweets on #COVID-19 using search-tweets()
-tweets_cov19 <- search_tweets("#COVID")
-head(tweets_cov19)
-#To view the column, type
+#To view the components, we type
+
 names(tweets_cov19)
-
-
 # next we aim at exploring components
 # screen_name is to understand user interest
 # followers_count is to compare social media influence
@@ -60,7 +49,7 @@ head(sc_covid)
 # followers_count is to compare social media influence
 # retweet_count and text is to identify popular tweets
 # We can compare followers count. example
-<<<<<<< HEAD
+
 covid_trend<- lookup_statuses(c("COVID","COVID-19","corona virus"))
 covid_trend
 covid1_trend <- lookup_tweets("covid")
@@ -73,8 +62,6 @@ trend_df
 #next we create a dataframe for the screen name and followers count
 user_df <- tw_follower[,c("screen_name", "followers_count")]
 #to view the dataframe
-=======
-
 ## To find trend we can use the below as guide
 #######################################################################
 tw_follower <- lookup_users(c("trump","Christiano","adele"))###########
@@ -156,9 +143,15 @@ spark_read_csv(sc, "tweetcsv/")
 # first we created a directory for the input we will get, then create a csv file
 # then create a stream with the attributes we need
 names(tweets_co)
+install.packages("dplyr")
 ??stream
-# stream <- stream_read_csv(Sc, "dissertationcsv/")%>% select(, ,) %>% stream_write_csv("output/")
-dir("output", pattern = ".csv")
+??select
+# To try out streaming, We first create a folder,here we will call it input
+# dir.create("input") We already have an input folder "tweetcsv"
+# write.csv(mtcars, "input/cars_1.csv", row.names = F)
+# Then We define a strean that processes incoming data from the input folder, performs a custom transformation in R and pushes the output into an output folder
+stream <- stream_read_csv(sc, "tweetcsv/")%>% select(screen_name,followers_count,text) %>% stream_write_csv("tweetout/")
+dir("tweetout", pattern = ".csv")
 # We can keep adding files to the input location, and the spark will parallelize and process data automatically. Let's add one more file and validate that its automatically processed
 write.csv(mtcars, "input/cars_2.csv", row.names = F)
 # now check and validate that the data is processed by the spark stream
@@ -182,27 +175,11 @@ citation("broom")
 # Processing - Spark applies the desired operations on top of the data. These operations could be data manipulations (dplyr, SQL), data transformations (sdf operations, PipelineModel predictions), or native R manipulations (spark_apply()).
 # Output - The results of processing the input files are saved in a different folder.
 install.packages("future")
-install.packages("shiny")
-library(dplyr)
 library(future)
-
 ??future
 install.packages("sparklyr")
 library(sparklyr)
 sc <- spark_connect(master = "local")
-
-if(file.exists("source")) unlink("source", TRUE)
-if(file.exists("source-out")) unlink("source-out", TRUE)
-stream_generate_test(iterations = 1)
-read_folder <- stream_read_csv(sc, "source") 
-write_output <- stream_write_csv(read_folder, "source-out")
-invisible(future(stream_generate_test(interval = 0.5)))
-
-stream_stop(write_output)
-
-??shiny
-stream_view(write_output)
-stream_stop(write_output)
 # •	Basic text mining
 # •	Text mining with R
 # •	Tidying text
