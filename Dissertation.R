@@ -60,7 +60,7 @@ us_cov13_df <- tweets_2020[,c("screen_name","followers_count","text")]
 us_cov14_df <- tweets_2020[,c("screen_name","followers_count","text")]
 us_cov15_df <- tweets_2020[,c("screen_name","followers_count","text")]
 # viewing the df
-us_cov_df
+us_cov10_df
 us_cov2_df
 us_cov3_df
 us_cov4_df
@@ -70,8 +70,7 @@ us_cov4_df
 # it helps to identify trends and popularity of a topic
 # Sorting dataframe based on followers count in descending order
 library(dplyr)
-rlang::last_error()
-rlang::last_trace()
+
 rtwt_sort10 <- arrange(us_cov10_df, desc(us_cov10_df$followers_count))
 rtwt_sort11 <- arrange(us_cov11_df, desc(us_cov11_df$followers_count))
 rtwt_sort12 <- arrange(us_cov12_df, desc(us_cov12_df$followers_count))
@@ -127,16 +126,6 @@ sc <- spark_connect(master = "local")
 
 spark_read_csv(sc, "tweetcsv/")
 
-?? stream_tweets
-stream_tweets(
-  q = "",
-  timeout = 30,
-  parse = TRUE,
-  token = NULL,
-  file_name = NULL,
-  verbose = TRUE,
-  ...
-)
 
 # •	Streaming R: To create a continuous flow of data
 # Then We define a stream that processes incoming data from the input folder, performs a custom transformation in R and pushes the output into an output folder
@@ -148,7 +137,7 @@ stream <- stream_read_csv(sc, "tweetcsv/")%>% select(screen_name,followers_count
 # In here the processing occurs, before outputing results
 ############################################################################
 # to delete a file use the command below ###################################
-if(file.exists("Dissertation method-copy.R")) unlink("tweetcsv/l18.csv", TRUE)########
+if(file.exists("Dissertation method-copy.R")) unlink("Dissertation method-copy.R", TRUE)########
 ############################################################################
 
 
