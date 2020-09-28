@@ -85,8 +85,8 @@ rtwt_unique <- unique(rtwt_sort10, by ="text")
 rtwt_unique2 <- unique(rtwt_sort11, by ="text")
 rtwt_unique3 <- unique(rtwt_sort12, by ="text")
 rtwt_unique4 <- unique(rtwt_sort13, by ="text")
-rtwt_unique4 <- unique(rtwt_sort14, by ="text")
-rtwt_unique4 <- unique(rtwt_sort15, by ="text")
+rtwt_unique5 <- unique(rtwt_sort14, by ="text")
+rtwt_unique6 <- unique(rtwt_sort15, by ="text")
 rtwt_unique
 head(rtwt_unique)
 head(rtwt_unique2)
@@ -99,8 +99,8 @@ User_name_table <- table(us_cov10_df$screen_name)
 User_name_table2 <- table(us_cov11_df$screen_name)
 User_name_table3 <- table(us_cov12_df$screen_name)
 User_name_table4 <- table(us_cov13_df$screen_name)
-User_name_table4 <- table(us_cov14_df$screen_name)
-User_name_table4 <- table(us_cov15_df$screen_name)
+User_name_table5 <- table(us_cov14_df$screen_name)
+User_name_table6 <- table(us_cov15_df$screen_name)
 
 head(User_name_table)
 head(user_df)
@@ -121,11 +121,22 @@ write.csv(us_cov5_df, "tweetcsv/l5.csv", row.names = FALSE)
 
 # combining all csv files
 do.call("rbind", lapply(dir("tweetcsv", full.names = TRUE), read.csv))
-
+??do.call
 library(sparklyr)
 sc <- spark_connect(master = "local")
 
 spark_read_csv(sc, "tweetcsv/")
+
+?? stream_tweets
+stream_tweets(
+  q = "",
+  timeout = 30,
+  parse = TRUE,
+  token = NULL,
+  file_name = NULL,
+  verbose = TRUE,
+  ...
+)
 
 # •	Streaming R: To create a continuous flow of data
 # Then We define a stream that processes incoming data from the input folder, performs a custom transformation in R and pushes the output into an output folder
@@ -135,13 +146,11 @@ names(tweets_co)
 ??stream
 stream <- stream_read_csv(sc, "tweetcsv/")%>% select(screen_name,followers_count,text) %>% stream_write_csv("tweetout/")
 # In here the processing occurs, before outputing results
+############################################################################
+# to delete a file use the command below ###################################
+if(file.exists("Dissertation method-copy.R")) unlink("tweetcsv/l18.csv", TRUE)########
+############################################################################
 
-write.csv(us_cov10_df, "tweetcsv/l13.csv", row.names = FALSE)
-write.csv(us_cov11_df, "tweetcsv/l14.csv", row.names = FALSE)
-write.csv(us_cov12_df, "tweetcsv/l15.csv", row.names = FALSE)
-write.csv(us_cov13_df, "tweetcsv/l16.csv", row.names = FALSE)
-write.csv(us_cov14_df, "tweetcsv/l17.csv", row.names = FALSE)
-write.csv(us_cov15_df, "tweetcsv/l18.csv", row.names = FALSE)
 
 dir("tweetout", pattern = ".csv")
 # We can keep adding files to the input location, and the spark will parallelize and process data automatically. Let's add one more file and validate that its automatically processed
@@ -161,15 +170,44 @@ spark_disconnect(sc)
 # Before analyzing a dataset, we would want to take a look at it to give prior understanding
 ################################################################################################
 # To do some transformations like replacing 'missing' with empty strings we type
-
-essays <- essays %>%
+install.packages("dplyr")
+library(dplyr)
+install.packages("ggplot2")
+library(ggplot2)
+??regexp
+rlang::last_error()
+rlang::last_trace()
+us_cov_df <- us_cov_df %>% 
   # Replace `missing` with empty string.
   mutate_all(list(~ ifelse(. == "missing", "", .))) %>%
-  # Concatenate the columns.
-  mutate(essay = paste(!!!syms(essay_cols))) %>%
   # Remove miscellaneous characters and HTML tags
-  mutate(words = regexp_replace(essay, "\\n|&nbsp;|<[^>]*>|[^A-Za-z|']", " "))
-glimpse(essays)
+  mutate(words = regexp_replace(text, "\\n|&nbsp;|<[^>]*>|[^A-Za-z|']", " ")) 
+
+ 
+
+glimpse(us_cov_df)
+
+
+us_cov_df <- us_cov_df %>%
+  mutate(text = covid(wo_stop_words)) %>%
+  select(text, screen_name) %>%
+  filter(nchar(text) > 2)
+
+word_count <- us_cov_df %>%
+  group_by(text, ) %>%
+  tally() %>%
+  arrange(desc(n)) 
+
+# Data transformation
+# The objective is to end up with a tidy table inside Spark with one row per word used. The steps will be:
+  
+# The needed data transformations apply to the data from both authors. The data sets will be appended to one another
+# Punctuation will be removed
+# The words inside each line will be separated, or tokenized
+# For a cleaner analysis, stop words will be removed
+# To tidy the data, each word in a line will become its own row
+# The results will be saved to Spark memory
+
 #################################################################################
 # Topic Modelling
 #  LDA is a type of topic model for identifying abstract “topics” in a set of documents. 
@@ -207,7 +245,7 @@ betas %>%
 # Checking the frequency of a term in documents
 # We include the below libraries
 library(dplyr)
-library(janeaustenr)
+
 library(tidytext)
 # We then create an object
 book_words <- austen_books() %>%
