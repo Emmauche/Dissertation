@@ -155,7 +155,10 @@ library(tidyverse)
 
 # To check how many words start with c
 sum(str_detect(us_cov10_df$text, "^c"))
-
+??stringi
+install.packages("stringi")
+library(stringi)
+?stringi
 #What proportion of common words end with a vowel
 mean(str_detect(us_cov10_df$text, "[aeiou]$"))
 # How many words ends with word "covid"
