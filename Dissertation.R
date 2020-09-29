@@ -53,7 +53,7 @@ head(sc_covid)
 ## To find trend we can use the below as guide
 #######################################################################
 # creating dataframe for covid tweets by users and number of followers they have and the text they shared
-us_cov10_df <- tweets_covid[,c("screen_name","followers_count","text")]
+us_cov10_df <- tweets_covid[,c("screen_name","followers_count","text"), values_drop_na = TRUE] 
 us_cov11_df <- tweets_cov[,c("screen_name","followers_count","text")]
 us_cov12_df <- tweets_corona[,c("screen_name","followers_count","text")]
 us_cov13_df <- tweets_2020[,c("screen_name","followers_count","text")]
@@ -146,10 +146,101 @@ dir("tweetout", pattern = ".csv")
 # write.csv(mtcars, "input/cars_2.csv", row.names = F)
 # now check and validate that the data is processed by the spark stream
 
-
+?purrr
 # to stop the stream use the streamstop() function
 stream_stop(stream)
 spark_disconnect(sc)
+install.packages("tidyverse")
+library(tidyverse)
+
+# To check how many words start with c
+sum(str_detect(us_cov10_df$text, "^c"))
+
+#What proportion of common words end with a vowel
+mean(str_detect(us_cov10_df$text, "[aeiou]$"))
+# How many words ends with word "covid"
+sum(str_detect(us_cov10_df$text,"[covid]$"))
+searchwords <- c("Covid","covid-19","cure","lockdown")
+word_match <- str_c(searchwords, collapse = "|")
+ # has_word <- str_extract_all(us_cov10_df,searchwords, simplify = TRUE)
+view <-str_view_all(us_cov10_df, word_match)
+?str_c()
+# Dealing with text is typically not even considered in the applied statistical training of most disciplines.
+# Here are some of the packages used in this document:
+
+#Throughout
+#tidyverse
+#tidytext
+#Strings
+#stringr
+#lubridate
+#Sentiment
+#gutenbergr
+#janeaustenr
+#POS
+#openNLP
+#NLP
+#tm
+#Topic Models
+#topicmodels
+#quanteda
+#Word Embedding
+#text2vec
+#Note the following color coding used in this document:
+  
+ # emphasis
+#package
+#function
+#object/class
+#link
+
+
+# Basic Text Functionality
+# Base R
+# A lot of folks new to R are not aware of just how much basic text processing R comes with out of the box. Here are examples of note.
+
+# paste: glue text/numeric values together
+#substr: extract or replace substrings in a character vector
+#grep family: use regular expressions to deal with patterns of text
+#strsplit: split strings
+#nchar: how many characters in a string
+#as.numeric: convert a string to numeric if it can be
+#strtoi: convert a string to integer if it can be (faster than as.integer)
+#adist: string distances
+############################################################################
+??grepl
+string = c('r is the shiny', 'r is the shiny1', 'r shines brightly')########
+grepl(string, pattern='^r.*shiny[0-9]$')
+############################################################################
+# Sentiment analysis
+install.packages("tidytext")
+library(tidytext)
+tweets_covid
+stri = tweets_covid
+# Reading in the text files
+# We start with the raw text, reading it in line by line. In what follows we read in all the texts 
+# (three) in a given directory, such that each element of ‘text’ is the work itself, 
+# i.e. text is a list column5. The unnest function will unravel the works to where each entry is essentially 
+# a paragraph form.
+
+library(tidytext)
+library(dplyr)
+library(base)
+library(sparklyr)
+acov = data.frame(file = dir('tweetcsv/l1.csv', full.names = TRUE) %>%
+                    mutate(text = Map(file, read_line)) %>% 
+                    transmute(work = basename(file), text) %>%
+                    unnest(text))
+                  
+vignette('programming') 
+
+  # Not working yet
+grepl(stri, pattern = 'c.*ovid[0-9]$')
+tweets_covid %>% filter(word=='covid') 
+us_cov10_df %>% filter(text == 'covid')
+ # till here
+?sentiments
+??gregexpr
 # sample of words to search on twitter 
 # Unreliable, COnspiracy Clickbait, political/biased
 #some keywords
@@ -163,29 +254,15 @@ install.packages("dplyr")
 library(dplyr)
 install.packages("ggplot2")
 library(ggplot2)
-??regexp
-rlang::last_error()
-rlang::last_trace()
-us_cov_df <- us_cov_df %>% 
+??regex
+
+us_cov10_df <- us_cov10_df %>% 
   # Replace `missing` with empty string.
   mutate_all(list(~ ifelse(. == "missing", "", .))) %>%
   # Remove miscellaneous characters and HTML tags
-  mutate(words = regexp_replace(text, "\\n|&nbsp;|<[^>]*>|[^A-Za-z|']", " ")) 
-
- 
+  mutate(text = regexp_replace(text, "\\n|&nbsp;|<[^>]*>|[^A-Za-z|']", " ")) 
 
 glimpse(us_cov_df)
-
-
-us_cov_df <- us_cov_df %>%
-  mutate(text = covid(wo_stop_words)) %>%
-  select(text, screen_name) %>%
-  filter(nchar(text) > 2)
-
-word_count <- us_cov_df %>%
-  group_by(text, ) %>%
-  tally() %>%
-  arrange(desc(n)) 
 
 # Data transformation
 # The objective is to end up with a tidy table inside Spark with one row per word used. The steps will be:
@@ -207,6 +284,7 @@ word_count <- us_cov_df %>%
 # for which the large number of documents renders manual approaches infeasible.
 # The application domains range from GitHub issues to legal documents.
 # For example we have:
+??ml_default_stop_words
 stop_words <- ml_default_stop_words(sc) %>%
   c(
     "like", "love", "good", "music", "friends", "people", "life",
