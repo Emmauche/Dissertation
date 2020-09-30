@@ -15,6 +15,7 @@ tweets_cov <-search_tweets("#COVID", n= 2000, include_rts = TRUE, lang = "en")
 tweets_2020 <-search_tweets("#2020", n= 2000, include_rts = TRUE, lang = "en")
 tweets_cure  <-search_tweets("#cure", n= 2000, include_rts = TRUE, lang = "en")
 tweets_lockdown  <-search_tweets("#lockdown", n= 2000, include_rts = TRUE, lang = "en")
+# fake, #Covid_19,#COVID19,#COVID2019, #CoronaVirus, #COVIDIOTS", and  conspiracy
 # We aim at analyzing immediate tweets and be able to identify mis informing ones
 # now we shall examine the data extracted We use the head() function
 head(tweets_covid)
@@ -152,6 +153,39 @@ stream_stop(stream)
 spark_disconnect(sc)
 install.packages("tidyverse")
 library(tidyverse)
+us_cov_df
+
+
+# creating a matrix of the df
+d <- as.matrix(us_cov_df)
+dimnames(d) <- list(d[, 1], d[1, ])
+# Removing all commas
+d[, ] <- stri_replace_all_regex(d, "(?<=\\d),(?=\\d)", "")
+d
+d[, ] <- stri_replace_all_regex(d,"(\\d+(?:\\.\\d+)?)\\(\\d+(?:\\.\\d+)?\\)", "$1")
+# as.numeric() can be used to interpret the all the strings as numbers:
+d <- structure(as.numeric(d), dim=dim(d), dimnames=dimnames(d))
+typeof(d)
+# spliting texts
+textsplit <- stri_split_fixed(us_cov_df$text, " ",n = 10, simplify = TRUE)
+
+length(us_cov_df)
+# to find the lengths of the dataframe
+stri_length(us_cov_df)
+
+# To determine which of the items are empty strings
+
+stri_isempty(us_cov10_df)
+
+# For dealing with missing values, we may use convenience functions such as 
+stri_replace_na(x, "<NA>") %s+% "!"
+g <- stri_replace_na(us_cov_df, "<NA>" %s+% "!")
+h <-stri_omit_empty_na(us_cov_df) %s+% "!"
+stri_omit_na()
+i <- stri_extract_all_regex(us_cov_df, ".ovid", case_insensitive=TRUE)
+
+# and if additionally we would like to get rid of empty strings in a vector,
+stri_omit_empty_na()
 
 # To check how many words start with c
 sum(str_detect(us_cov10_df$text, "^c"))
@@ -167,6 +201,8 @@ searchwords <- c("Covid","covid-19","cure","lockdown")
 word_match <- str_c(searchwords, collapse = "|")
  # has_word <- str_extract_all(us_cov10_df,searchwords, simplify = TRUE)
 view <-str_view_all(us_cov10_df, word_match)
+
+
 ?str_c()
 # Dealing with text is typically not even considered in the applied statistical training of most disciplines.
 # Here are some of the packages used in this document:
