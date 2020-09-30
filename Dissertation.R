@@ -155,6 +155,87 @@ install.packages("tidyverse")
 library(tidyverse)
 us_cov_df
 
+######################################################################################################
+# Using tidy data principles is a powerful way to make handling data easier and more effective, 
+#and this is no less true when it comes to dealing with text. As described by Hadley Wickham 
+#(Wickham 2014), tidy data has a specific structure:
+ ########################################################################################### 
+ # Each variable is a column
+# Each observation is a row
+# Each type of observational unit is a table
+# we need to both break the text into individual tokens (a process called tokenization) 
+# and transform it to a tidy data structure. 
+# To do this, we use tidytext’s unnest_tokens() function.
+
+library(tidytext)
+library(dplyr)
+library(stringr)
+library(stringi)
+
+
+# Grouping the dataframe by followers count and adding text as detected using the regex
+ori <- us_cov_df %>%
+  group_by(followers_count) %>%
+  mutate(text = cumsum(str_detect(text, regex("^chapter [\\divxlc]", ignore_case = TRUE)))) %>%  ungroup()
+ri <- us_cov_df %>%
+  group_by(screen_name) %>%
+  mutate(text = cumsum(str_detect(text, regex("^chapter [\\divxlc]", ignore_case = TRUE)))) %>%  ungroup()
+
+# To work with this as a tidy dataset, we need to restructure it in the one-token-per-row format
+# fre <- us_cov_df %>% unnest_tokens(word,text)
+bre <- us_cov_df %>% unnest_tokens(word,text)  %>% anti_join(stop_words)
+# This function uses the tokenizers package to separate each line of text in the original data frame into tokens. The default tokenizing is for words, but other options include characters, n-grams, sentences, lines, paragraphs, or separation around a regex pattern.
+
+# Now that the data is in one-word-per-row format, we can manipulate it with tidy tools like dplyr
+# We can use dplyr’s count() to find the most common words in all dataframes.
+howmany <- bre %>%  count(word, sort = TRUE)
+# Because we’ve been using tidy tools, our word counts are stored in a tidy data frame. 
+# This allows us to pipe this directly to the ggplot2 package, 
+# to create a visualization of the most common words
+library(ggplot2)
+gra <- bre %>%
+  count(word, sort = TRUE) %>%
+  filter(n > 1000) %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(word, n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip()
+# Now, let’s calculate the frequency for each word 
+library(tidyr)
+
+# To check the frequency of words
+freq <- bind_rows(mutate(bre, text = "covid"))  %>% 
+  mutate(word = str_extract(word, "[a-z']+")) %>%
+  count(screen_name, word) %>%
+  group_by(screen_name) %>%
+  mutate(proportion = n / sum(n)) %>% 
+  select(-n) %>% 
+  spread(screen_name, proportion) %>% 
+  gather(screen_name, proportion)
+
+library(scales)
+# plotting we get
+
+gPlo <-ggplot(freq, aes(x = proportion, y = bre, color = abs(bre - proportion))) +
+  geom_abline(color = "gray40", lty = 2) +
+  geom_jitter(alpha = 0.1, size = 2.5, width = 0.3, height = 0.3) +
+  geom_text(aes(label = word), check_overlap = TRUE, vjust = 1.5) +
+  scale_x_log10(labels = percent_format()) +
+  scale_y_log10(labels = percent_format()) +
+  scale_color_gradient(limits = c(0, 0.001), low = "darkslategray4", high = "gray75") +
+  facet_wrap(~bre, ncol = 2) +
+  theme(legend.position="none") +
+  labs(y = bre, x = NULL)
+
+# Let’s quantify how similar and different these sets of word frequencies are using a 
+# correlation test. How correlated are the word frequencies
+# between (Austen) screen names
+
+
+# stop words can be removed by using anti_join function
+tidy_books <- tidy_books %>%
+  anti_join(stop_words)
 
 # creating a matrix of the df
 d <- as.matrix(us_cov_df)
@@ -183,6 +264,8 @@ g <- stri_replace_na(us_cov_df, "<NA>" %s+% "!")
 h <-stri_omit_empty_na(us_cov_df) %s+% "!"
 stri_omit_na()
 i <- stri_extract_all_regex(us_cov_df, ".ovid", case_insensitive=TRUE)
+j <- stri_extract_all_regex(us_cov_df, "<([a-z]+)>.*?</\\1>")
+l<-  cat(stri_wrap(us_cov_df, width=60, indent=24, exdent=20, prefix="> "), sep="\n")
 
 # and if additionally we would like to get rid of empty strings in a vector,
 stri_omit_empty_na()
