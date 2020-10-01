@@ -184,7 +184,105 @@ ri <- us_cov_df %>%
 # To work with this as a tidy dataset, we need to restructure it in the one-token-per-row format
 # fre <- us_cov_df %>% unnest_tokens(word,text)
 bre <- us_cov_df %>% unnest_tokens(word,text)  %>% anti_join(stop_words)
+
 # This function uses the tokenizers package to separate each line of text in the original data frame into tokens. The default tokenizing is for words, but other options include characters, n-grams, sentences, lines, paragraphs, or separation around a regex pattern.
+# Now that the text is in a tidy format with one word per row,
+# we are ready to do the sentiment analysis.
+
+covsent <- bre %>%
+  inner_join(get_sentiments("bing")) %>% 
+  count(word, sentiment) %>%
+  spread(sentiment, n, fill = 0) %>%
+  mutate(sentiment = positive - negative)
+
+# using filter we try
+fcov  <- bre %>% 
+  filter(word == "lock down")
+
+# using word cloud
+
+# consider the wordcloud package, which uses base R graphics. 
+# Let’s look at the most common words
+install.packages("wordcloud")
+library(wordcloud)
+bre %>%
+  anti_join(stop_words) %>%
+  count(word) %>%
+  with(wordcloud(word, n, max.words = 1000))
+install.packages("reshape2")
+library(reshape2)
+bre %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(word, sentiment, sort = TRUE) %>%
+  acast(word ~ sentiment, value.var = "n", fill = 0) %>%
+  comparison.cloud(colors = c("gray20", "gray80"),
+                   max.words = 100)
+
+# Looking at unit beyond worrds
+
+covidchap <- us_cov_df %>%
+  group_by(text) %>%
+  unnest_tokens(screen_name, text, token = "regex", 
+                pattern = "Chapter|CHAPTER [\\dIVXLC]") %>%
+  ungroup()
+
+sumchap <-  covidchap %>% 
+  group_by( pattern = "breaking") %>% 
+  summarise(screen_name = n())
+
+#  One measure of how important a word may be is its term frequency (tf), 
+# how frequently a word occurs in a document
+covwords <- us_cov_df%>%
+  unnest_tokens(word, text) %>%
+  count(followers_count, word, sort = TRUE)
+
+totalwords <- covwords %>% 
+  group_by(followers_count) %>% 
+  summarize(total = sum(n))
+
+cov_wor <- left_join(covwords,totalwords)
+
+
+
+
+
+cords <- us_cov_df %>%
+  unnest_tokens(word, text) %>%
+  count(screen_name, word, sort = TRUE)
+
+# calculate tf-idf, then visualize the high tf-idf words
+plot_cords <- cords %>%
+  bind_tf_idf(word, screen_name, n) %>%
+  mutate(word = fct_reorder(word, tf_idf)) 
+
+# plotting
+axis <- plot_cords %>% 
+  group_by(screen_name) %>% 
+  top_n(15, tf_idf) %>% 
+  ungroup() %>%
+  mutate(word = reorder(word, tf_idf)) %>%
+  ggplot(aes(word, tf_idf, fill = screen_name)) +
+  geom_col(show.legend = FALSE) +
+  labs(x = NULL, y = "tf-idf") +
+  facet_wrap(~screen_name, ncol = 2, scales = "free") +
+  coord_flip()
+
+mystopwords <- tibble(word = c("eq", "co", "rc", "ac", "ak", "bn", 
+                               "fig", "file", "cg", "cb", "cm","to","the","is","it","of","in",
+                               "ab", "_k", "_k_", "_x"))
+twords <- anti_join(cords, mystopwords, 
+                           by = "word")
+install.packages("igraph")
+library(igraph)
+
+# Casting tidy text data into a matrix
+# Topic modeling
+
+
+plcovsent <- ggplot(covsent, aes(index, sentiment, fill = word)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~word, ncol = 2, scales = "free_x")
+
 
 # Now that the data is in one-word-per-row format, we can manipulate it with tidy tools like dplyr
 # We can use dplyr’s count() to find the most common words in all dataframes.
@@ -227,6 +325,9 @@ gPlo <-ggplot(freq, aes(x = proportion, y = bre, color = abs(bre - proportion)))
   facet_wrap(~bre, ncol = 2) +
   theme(legend.position="none") +
   labs(y = bre, x = NULL)
+
+
+
 
 # Let’s quantify how similar and different these sets of word frequencies are using a 
 # correlation test. How correlated are the word frequencies
