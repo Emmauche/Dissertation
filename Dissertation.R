@@ -3,8 +3,6 @@
 # Extracting twitter data
 # Onnce a twittwer developer account is created, enable pop-up on your mobile browser install rtweet() and httpuv() packages
 install.packages("rtweet")
-install.packages("esquisse") 
-library(esquisse)
 library(rtweet)
 install.packages("httpuv")
 library(httpuv)
